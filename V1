@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Excel to CSV Converter</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.16.2/xlsx.full.min.js"></script>
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #f4f4f4;
+            padding: 20px;
+            text-align: center;
+        }
+
+        h1 {
+            color: #217346; /* Excel Green */
+        }
+
+        input[type="file"] {
+            padding: 8px;
+            margin: 10px 0;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+        }
+
+        button {
+            background-color: #217346; /* Excel Green */
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #1e5c33;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Excel to CSV Converter</h1>
+    <input type="file" id="excelFile" accept=".xlsx, .xls" />
+    <button onclick="convertToCSV()">Convert to CSV</button>
+
+    <script>
+        function convertToCSV() {
+            var file = document.getElementById('excelFile').files[0];
+            var reader = new FileReader();
+
+            reader.onload = function(e) {
+                var data = new Uint8Array(e.target.result);
+                var workbook = XLSX.read(data, {type: 'array'});
+                
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+                var csv = XLSX.utils.sheet_to_csv(worksheet);
+
+                downloadCSV(csv);
+            };
+
+            reader.readAsArrayBuffer(file);
+        }
+
+        function downloadCSV(csv) {
+            var hiddenElement = document.createElement('a');
+            hiddenElement.href = 'data:text/csv;charset=utf-8,' + encodeURI(csv);
+            hiddenElement.target = '_blank';
+            hiddenElement.download = 'converted.csv';
+            hiddenElement.click();
+        }
+    </script>
+
+</body>
+</html>
